@@ -38,7 +38,6 @@ class Runtime {
     //   }
     // });
     return false;
-
   }
   addSnake(config) {
     const snake = new Snake(this.keydown$, config);

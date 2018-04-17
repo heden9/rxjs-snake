@@ -1,6 +1,6 @@
 import * as Rx from 'rxjs';
 import { Observable } from 'rxjs';
-import { SPEED, DIRECTIONS, nextDirection, checkCollision } from './config';
+import { SPEED, DIRECTIONS, nextDirection, checkCollision, generateApples } from './config';
 import { Snake } from './snake';
 import { Game } from './canvas';
 import { Scene } from './types';
@@ -44,28 +44,15 @@ class Runtime {
     this.snakes.push(snake);
   }
   run(game: Game) {
+    const apple$ = new Rx.BehaviorSubject(generateApples());
     const snakes = this.snakes.map(snake => {
-      const { direction$, snakeLength$, move, generateSnake, config } = snake;
-      const snake$ = this.tick$
-        .withLatestFrom(
-          direction$,
-          snakeLength$,
-          (_, directions, snakeLength) => [directions, snakeLength]
-        )
-        .scan(move, generateSnake())
-        .map((pos) => ({ pos, config, instance: snake }))
-        .share();
-      const cb = Rx.Observable.combineLatest(snake$, snake.score$, (snake, score) => ({snake, score}));
-      return cb;
+      return snake.getSnake$();
     });
-    // const snakes$ = Rx.Observable.from(snakes);
-    this.scene$ = Rx.Observable.combineLatest(...snakes);
+
+    this.scene$ = Rx.Observable.combineLatest(snakes);
     const game$ = this.tick$
       .withLatestFrom(this.scene$, (_, scene) => scene)
       .takeWhile((players: Array<Scene>) => !this.isGameOver(players))
-      .map(((players: Array<Scene>) => {
-        return players.filter(scene => scene.snake.instance.life > 0)
-      }))
       .subscribe((players: Array<Scene>) => game.renderScene(players))
   }
 }

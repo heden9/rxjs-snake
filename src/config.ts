@@ -9,6 +9,7 @@ export const SPEED = 200;
 export const FPS = 60;
 export const SNAKE_LENGTH = 5;
 export const POINTS_PER_APPLE = 1;
+export const APPLE_COUNT = 2;
 
 export const DIRECTIONS: Directions = {
   37: { x: -1, y: 0 },
@@ -48,4 +49,32 @@ export function wrapBounds(point: Point2D) {
 }
 export function checkCollision(a, b) {
   return a.x === b.x && a.y === b.y;
+}
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+function isEmptyCell(position: Point2D, snake: Array<Point2D>): boolean {
+  return !snake.some(segment => checkCollision(segment, position));
+}
+export function getRandomPosition(snake: Array<Point2D> = []): Point2D {
+  let position = {
+    x: getRandomNumber(0, COLS - 1),
+    y: getRandomNumber(0, ROWS - 1)
+  };
+
+  if (isEmptyCell(position, snake)) {
+    return position;
+  }
+
+  return getRandomPosition(snake);
+}
+
+export function generateApples(): Array<Point2D> {
+  let apples = [];
+
+  for (let i = 0; i < APPLE_COUNT; i++) {
+    apples.push(getRandomPosition());
+  }
+
+  return apples;
 }

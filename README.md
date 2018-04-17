@@ -28,3 +28,7 @@ After you have installed all dependencies you can now run the app:
 Finally, open a browser and navigate to `localhost:9000`.
 
 Have fun!
+apple   
+tick    ----0----1----2----3----
+snake1  ----ˆ----ˆ----ˆ----ˆ----
+snake2  --†--†--†--†--†--†--†--†

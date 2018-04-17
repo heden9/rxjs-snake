@@ -12,10 +12,12 @@ export interface Directions {
 export interface Scene {
   snake: {
     config: Config;
-    pos: Array<Point2D>
+    pos: Array<Point2D>;
     instance: Snake;
   }
   score: number;
+  apple?: Array<Point2D>;
+
 }
 
 export interface CheckIsDie{

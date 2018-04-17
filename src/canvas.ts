@@ -26,7 +26,8 @@ export class Game {
   }
   renderScene(players: Array<Scene>) {
     this.renderBackground();
-    players.forEach(({ snake: { pos, config } }) => {
+    players.forEach(({ snake: { pos, config }, apple }) => {
+      // this.renderApples(apple);
       this.renderSnake(pos, config);
     })
   }
@@ -37,6 +38,9 @@ export class Game {
   }
   renderSnake(snake: Array<Point2D>, config: Config) {
     snake.forEach((segment, index) => paintCell(this.ctx, wrapBounds(segment), getSegmentColor(index, config.color)));
+  }
+  renderApples(apples: any[]) {
+    apples.forEach(apple => paintCell(this.ctx, apple, 'red'));
   }
 }
 export const game = new Game();

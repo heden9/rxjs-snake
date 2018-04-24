@@ -1,7 +1,15 @@
 import * as Rx from 'rxjs';
 import { Observable } from 'rxjs';
 import { Point2D, Config, Scene, CheckIsDie } from './types';
-import { SNAKE_LENGTH, POINTS_PER_APPLE, nextDirection, DIRECTIONS, checkCollision, getRandomPosition, generateApples } from './config';
+import {
+  SNAKE_LENGTH,
+  POINTS_PER_APPLE,
+  nextDirection,
+  DIRECTIONS,
+  checkCollision,
+  getRandomPosition,
+  generateApples
+} from './config';
 export class Snake {
   snakeLength$: Observable<number>;
   score$: Observable<number>;
@@ -20,16 +28,17 @@ export class Snake {
       directions: DIRECTIONS,
       ...config
     };
-    const length$ = this.length$ = new Rx.BehaviorSubject<number>(this.config.length);
+    const length$ = (this.length$ = new Rx.BehaviorSubject<number>(
+      this.config.length
+    ));
     this.ticks$ = Rx.Observable.interval(config.speed);
     this.snakeLength$ = length$
       .scan((step, snakeLength) => snakeLength + step)
-      .share()
+      .share();
 
     this.score$ = this.snakeLength$
       .startWith(0)
-      .scan((score) => score + POINTS_PER_APPLE);
-
+      .scan(score => score + POINTS_PER_APPLE);
   }
 
   private initDirections(keydown$) {
@@ -39,26 +48,38 @@ export class Snake {
       .filter(directions => !!directions)
       .scan(nextDirection)
       .distinctUntilChanged();
-
   }
   getSnake$ = () => {
-    const { direction$, ticks$, snakeLength$, move, length$, generateSnake, config, score$, eat } = this;
-    const snake$ = this.snake$ = ticks$
+    const {
+      direction$,
+      ticks$,
+      snakeLength$,
+      move,
+      length$,
+      generateSnake,
+      config,
+      score$,
+      eat
+    } = this;
+    const snake$ = (this.snake$ = ticks$
       .withLatestFrom(
         direction$,
         snakeLength$,
         (_, directions, snakeLength) => [directions, snakeLength]
       )
       .scan(move, generateSnake())
-      .map((pos) => ({ pos, config, instance: this }))
-      .share();
-    const cb = Rx.Observable.combineLatest(snake$, score$, (snake, score) => ({snake, score}));
+      .map(pos => ({ pos, config, instance: this }))
+      .share());
+    const cb = Rx.Observable.combineLatest(snake$, score$, (snake, score) => ({
+      snake,
+      score
+    }));
     return cb;
-  }
-  _eat = (apple$) => {
-    this.snake$
-    apple$.scan(this.eat)
-  }
+  };
+  _eat = apple$ => {
+    this.snake$;
+    apple$.scan(this.eat);
+  };
   // checkIsDie: CheckIsDie = (players, index) => {
   //   const head = players[index].snake.pos[0];
   //   let killer;
@@ -90,7 +111,7 @@ export class Snake {
     }
 
     return snake;
-  }
+  };
   eat = (apples, { pos: snake }) => {
     let head = snake[0];
 
@@ -102,7 +123,7 @@ export class Snake {
     }
 
     return apples;
-  }
+  };
   move = (snake, [direction, snakeLength]) => {
     let nx = snake[0].x;
     let ny = snake[0].y;
@@ -122,7 +143,7 @@ export class Snake {
     snake.unshift(tail);
 
     return snake;
-  }
+  };
 }
 
 // export const snake = new Snake();

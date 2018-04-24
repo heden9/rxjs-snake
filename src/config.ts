@@ -1,4 +1,4 @@
-import { Directions, Point2D } from './types';
+import { Directions, Point2D } from "./types";
 export const ROWS = 50;
 export const COLS = 100;
 export const GAP_SIZE = 1;
@@ -29,16 +29,20 @@ export function nextDirection(previous, next) {
   return next;
 }
 
-export function paintCell(ctx: CanvasRenderingContext2D, point: Point2D, color: string) {
-  const x = point.x * CELL_SIZE + (point.x * GAP_SIZE);
-  const y = point.y * CELL_SIZE + (point.y * GAP_SIZE);
+export function paintCell(
+  ctx: CanvasRenderingContext2D,
+  point: Point2D,
+  color: string
+) {
+  const x = point.x * CELL_SIZE + point.x * GAP_SIZE;
+  const y = point.y * CELL_SIZE + point.y * GAP_SIZE;
 
   ctx.fillStyle = color;
   ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
 }
 
-export function getSegmentColor(index: number, color: string = '#2196f3') {
-  return index === 0 ? 'black' : color;
+export function getSegmentColor(index: number, color: string = "#2196f3") {
+  return index === 0 ? "black" : color;
 }
 
 export function wrapBounds(point: Point2D) {

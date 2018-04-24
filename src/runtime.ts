@@ -1,9 +1,15 @@
-import * as Rx from 'rxjs';
-import { Observable } from 'rxjs';
-import { SPEED, DIRECTIONS, nextDirection, checkCollision, generateApples } from './config';
-import { Snake } from './snake';
-import { Game } from './canvas';
-import { Scene } from './types';
+import * as Rx from "rxjs";
+import { Observable } from "rxjs";
+import {
+  SPEED,
+  DIRECTIONS,
+  nextDirection,
+  checkCollision,
+  generateApples
+} from "./config";
+import { Snake } from "./snake";
+import { Game } from "./canvas";
+import { Scene } from "./types";
 class Runtime {
   tick$: Observable<number>;
   click$: Observable<{}>;
@@ -11,22 +17,20 @@ class Runtime {
   scene$: Observable<{}>;
   snakes: Array<Snake> = [];
   game$: Observable<{}>;
-  constructor(){
+  constructor() {
     this.init();
   }
-  private init(){
+  private init() {
     this.tick$ = Rx.Observable.interval(SPEED, Rx.Scheduler.animationFrame);
-    this.click$ = Rx.Observable.fromEvent(document, 'click')
-    this.keydown$ = Rx.Observable.fromEvent(document, 'keydown')
+    this.click$ = Rx.Observable.fromEvent(document, "click");
+    this.keydown$ = Rx.Observable.fromEvent(document, "keydown");
 
     /**
      * ---1---1---1---
      *
      */
-
   }
   isGameOver(players: Array<Scene>) {
-
     // let snake = scene.snake.pos;
     // let head = snake[0];
     // let body = snake.slice(1, snake.length);
@@ -53,7 +57,7 @@ class Runtime {
     const game$ = this.tick$
       .withLatestFrom(this.scene$, (_, scene) => scene)
       .takeWhile((players: Array<Scene>) => !this.isGameOver(players))
-      .subscribe((players: Array<Scene>) => game.renderScene(players))
+      .subscribe((players: Array<Scene>) => game.renderScene(players));
   }
 }
 

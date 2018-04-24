@@ -9,7 +9,7 @@ import { Directions, Point2D, Scene, Config } from './types';
 export class Game {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  constructor(){
+  constructor() {
     this.create();
     this.registry();
   }
@@ -29,7 +29,7 @@ export class Game {
     players.forEach(({ snake: { pos, config }, apple }) => {
       // this.renderApples(apple);
       this.renderSnake(pos, config);
-    })
+    });
   }
   renderBackground() {
     const { ctx } = this;
@@ -37,7 +37,13 @@ export class Game {
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   }
   renderSnake(snake: Array<Point2D>, config: Config) {
-    snake.forEach((segment, index) => paintCell(this.ctx, wrapBounds(segment), getSegmentColor(index, config.color)));
+    snake.forEach((segment, index) =>
+      paintCell(
+        this.ctx,
+        wrapBounds(segment),
+        getSegmentColor(index, config.color)
+      )
+    );
   }
   renderApples(apples: any[]) {
     apples.forEach(apple => paintCell(this.ctx, apple, 'red'));

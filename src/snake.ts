@@ -1,6 +1,6 @@
-import * as Rx from 'rxjs';
-import { Observable } from 'rxjs';
-import { Point2D, Config, Scene, CheckIsDie } from './types';
+import * as Rx from "rxjs";
+import { Observable } from "rxjs";
+import { Point2D, Config, Scene, CheckIsDie, EatInfo } from "./types";
 import {
   SNAKE_LENGTH,
   POINTS_PER_APPLE,
@@ -9,7 +9,8 @@ import {
   checkCollision,
   getRandomPosition,
   generateApples
-} from './config';
+} from "./config";
+
 export class Snake {
   snakeLength$: Observable<number>;
   score$: Observable<number>;
@@ -34,11 +35,14 @@ export class Snake {
     this.ticks$ = Rx.Observable.interval(config.speed);
     this.snakeLength$ = length$
       .scan((step, snakeLength) => snakeLength + step)
+      .do(e => console.log(this.config.color))
       .share();
 
     this.score$ = this.snakeLength$
       .startWith(0)
       .scan(score => score + POINTS_PER_APPLE);
+    // .skip(1)
+    // .do(e => console.log(e))
   }
 
   private initDirections(keydown$) {
@@ -49,7 +53,7 @@ export class Snake {
       .scan(nextDirection)
       .distinctUntilChanged();
   }
-  getSnake$ = () => {
+  getSnake$ = apple$ => {
     const {
       direction$,
       ticks$,
@@ -61,48 +65,30 @@ export class Snake {
       score$,
       eat
     } = this;
-    const snake$ = (this.snake$ = ticks$
+    const s1$ = (this.snake$ = ticks$
       .withLatestFrom(
         direction$,
         snakeLength$,
         (_, directions, snakeLength) => [directions, snakeLength]
       )
       .scan(move, generateSnake())
-      .map(pos => ({ pos, config, instance: this }))
       .share());
-    const cb = Rx.Observable.combineLatest(snake$, score$, (snake, score) => ({
-      snake,
-      score
-    }));
-    return cb;
+    const eaten$ = s1$
+      .withLatestFrom(apple$, (snake, apples) => ({ snake, apples }))
+      .skip(1)
+      .map(eat)
+      .distinctUntilChanged()
+      .do(e => apple$.next(e));
+    const snake$ = s1$.map(snake => ({ pos: snake, config, instance: this }));
+    return Rx.Observable.combineLatest(
+      snake$,
+      score$,
+      length$,
+      eaten$,
+      (snake, score) => ({ snake, score })
+    );
   };
-  _eat = apple$ => {
-    this.snake$;
-    apple$.scan(this.eat);
-  };
-  // checkIsDie: CheckIsDie = (players, index) => {
-  //   const head = players[index].snake.pos[0];
-  //   let killer;
-  //   const body_self = players[index].snake.pos.slice(1);
-  //   const body_others = players.filter((_, i) => i!==index).map(_ => _.snake.pos);
-  //   const flag_self = body_self.some(segment => checkCollision(segment, head));
-  //   const flag_others = body_others.some((_, i) => _.some((segment) => {
-  //     const flag = checkCollision(segment, head);
-  //     if (flag) {
-  //       killer = i;
-  //     }
-  //     return flag
-  //   }))
-  //   if (flag_self){
-  //     console.log('self');
-  //   }
-  //   if (flag_others){
-  //     console.log('others');
-  //     this.life --;
-  //   }
-  //   const isDie = flag_others && flag_self;
-  //   return { isDie, killer };
-  // }
+  checkIsDie: any = otherPlayers => {};
   generateSnake = () => {
     let snake: Array<Point2D> = [];
 
@@ -112,13 +98,17 @@ export class Snake {
 
     return snake;
   };
-  eat = (apples, { pos: snake }) => {
+  format = (apples, snake) => {
+    return { apples, len: this.config.length };
+  };
+  eat = ({ apples, snake }: EatInfo) => {
     let head = snake[0];
-
     for (let i = 0; i < apples.length; i++) {
       if (checkCollision(apples[i], head)) {
-        apples.splice(i, 1);
-        return [...apples, getRandomPosition(snake)];
+        const _apples = apples.slice();
+        _apples.splice(i, 1);
+        this.length$.next(POINTS_PER_APPLE);
+        return [..._apples, getRandomPosition(snake)];
       }
     }
 

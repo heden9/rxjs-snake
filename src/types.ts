@@ -16,10 +16,8 @@ export interface Scene {
     instance: Snake;
   };
   score: number;
-  apple?: Array<Point2D>;
 }
-
-export interface CheckIsDie {
+export interface CheckIsDie{
   (players: Array<Scene>, index: number): {
     isDie: boolean;
     killer: number;
@@ -38,4 +36,8 @@ export interface Config {
   speed: number;
   length: number;
   directions: Directions;
+}
+export interface EatInfo{
+  snake: Array<Point2D>;
+  apples: Array<Point2D>;
 }

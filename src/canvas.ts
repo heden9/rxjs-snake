@@ -24,10 +24,10 @@ export class Game {
   registry() {
     document.body.appendChild(this.canvas);
   }
-  renderScene(players: Array<Scene>) {
+  renderScene(players: Array<Scene>, apple) {
     this.renderBackground();
-    players.forEach(({ snake: { pos, config }, apple }) => {
-      // this.renderApples(apple);
+    players.forEach(({ snake: { pos, config } }) => {
+      this.renderApples(apple);
       this.renderSnake(pos, config);
     });
   }

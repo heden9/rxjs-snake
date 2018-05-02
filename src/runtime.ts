@@ -17,6 +17,7 @@ class Runtime {
   scene$: Observable<{}>;
   snakes: Array<Snake> = [];
   game$: Observable<{}>;
+  apple$: any;
   constructor() {
     this.init();
   }
@@ -49,15 +50,13 @@ class Runtime {
   }
   run(game: Game) {
     const apple$ = new Rx.BehaviorSubject(generateApples());
-    const snakes = this.snakes.map(snake => {
-      return snake.getSnake$();
-    });
-
+    // .do(e => console.log(e))
+    const snakes = this.snakes.map(snake => snake.getSnake$(apple$));
     this.scene$ = Rx.Observable.combineLatest(snakes);
     const game$ = this.tick$
-      .withLatestFrom(this.scene$, (_, scene) => scene)
-      .takeWhile((players: Array<Scene>) => !this.isGameOver(players))
-      .subscribe((players: Array<Scene>) => game.renderScene(players));
+      .withLatestFrom(this.scene$, apple$, (_, scene, apple) => [scene, apple])
+      // .takeWhile((players: Array<Scene>) => !this.isGameOver(players))
+      .subscribe(([players, apple]: any) => game.renderScene(players, apple));
   }
 }
 

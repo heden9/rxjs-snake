@@ -4,7 +4,12 @@ import { runtime } from './runtime';
 runtime.addSnake({
   color: 'red',
   length: 6,
-  speed: 400
+  speed: 300,
+});
+runtime.addSnake({
+  color: 'orange',
+  length: 10,
+  speed: 150,
 });
 runtime.addSnake({
   color: 'blue',
